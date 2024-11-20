@@ -1,6 +1,8 @@
 import express from 'express';
 import mysql from 'mysql2/promise';
 import fetch from 'node-fetch';
+import bcrypt from "bcrypt";
+import session from 'express-session';
 
 const app = express();
 app.use(express.json());
@@ -93,6 +95,44 @@ app.post('/posts', async (req, res) => {
     }
 });
 
+
+app.get('/logout', (req, res) => {
+    req.session.destroy();
+    res.render('login.ejs')
+ });
+
+app.get('/profile', isAuthenticated, (req, res) => {
+    res.render('profile.ejs');
+ });
+
+app.post('/login', async (req, res) => {
+    let username = req.body.username;
+    let password = req.body.password;
+
+    let sql = `SELECT * 
+    FROM admin
+    WHERE username = ?`;
+    let sqlParams = [username, password];
+    const [rows] = await conn.query(sql, sqlParams);
+
+    let passwordHash;
+    if(rows.length > 0) { // found at least one record
+        passwordHash = rows[0].password;
+    } else {
+        res.redirect('/');
+    }
+
+    const match = await bcrypt.compare(password, passwordHash);
+
+    if(match) {
+        req.sessionStore.fullName = rows[0].firstName + " " + rows[0].lastName;
+        req.session.authenticated = true;
+        res.render('posts.ejs');
+    } else {
+        res.redirect("/");
+    }
+ });
+
 app.get('/costs', (req, res) => {
     res.render('costs');
 });
@@ -100,6 +140,15 @@ app.get('/costs', (req, res) => {
 app.get('/auth', (req, res) => {
     res.render('auth');
 });
+
+ // middleware fumctions
+ function isAuthenticated(req, res, next) {
+    if(req.session.authenticated) {
+        next();
+    } else {
+        res.redirect('/');
+    }
+}
 
 app.listen(3101, ()=>{
     console.log("Express server running")
