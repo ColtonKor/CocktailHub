@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cocktail Hub - Posts</title>
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <ul class="nav-list">
+            <li><a href="/" class="nav-link">Home</a></li>
+            <li><a href="/find" class="nav-link">Find</a></li>
+            <li><a href="/posts" class="nav-link nav-selected">Post</a></li>
+            <li><a href="/costs" class="nav-link">Find Ingredient Cost</a></li>
+            <li><a href="/auth" class="nav-link">Log in | | Sign in</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <button class="button" onclick="document.getElementById('newPostModal').style.display='block'">
+            New Post
+        </button>
+        <br>
+        <br>
+
+        <div class="posts-container">
+            <% if (posts && posts.length > 0) { %>
+                <% posts.forEach(post => { %>
+                    <div class="post">
+                        <strong>Title:</strong> <%= post.title %>
+                        <div class="content">
+                            <p>  <%= post.content %></p>
+                        </div>
+                        <br>
+                        <div class="post-footer">
+                            <span>Posted: <%= new Date(post.datePosted).toLocaleDateString() %></span>
+                            <span>❤️ <%= post.likesCount %></span>
+                        </div>
+                        <br>
+                        
+                        <br>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <p>No posts yet!</p>
+            <% } %>
+        </div>
+
+        <div id="newPostModal" class="modal">
+            <div class="modal-content">
+                <form method="POST" action="/posts">
+                    <div class="form-group">
+                        <label>Title:</label>
+                        <input type="text" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Select Drinks (up to 3):</label>
+                        <select name="drinkList" multiple size="3" required>
+                            <% if (drinks && drinks.length > 0) { %>
+                                <% drinks.forEach(drink => { %>
+                                    <option value="<%= drink %>"><%= drink %></option>
+                                <% }) %>
+                            <% } %>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Comment:</label>
+                        <textarea name="comment" rows="3"></textarea>
+                    </div>
+                    <button type="submit">Create Post</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/script.js"></script>
+</body>
+</html>
