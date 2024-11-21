@@ -10,6 +10,14 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
 
+app.set('trust proxy', 1);
+app.use(session({
+  secret: 'keyboard cat',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: true }
+}))
+
 const pool = mysql.createPool({
     host: "aureliano-khoury.tech",
     user: "aurelia1_webuser",
@@ -52,6 +60,10 @@ async function fetchCocktails() {
 
 // Routes
 app.get('/', (req, res) => {
+    res.render('login');
+});
+
+app.get('/welcome', (req, res) => {
     res.render('welcome');
 });
 
@@ -105,29 +117,60 @@ app.get('/profile', isAuthenticated, (req, res) => {
     res.render('profile.ejs');
  });
 
+app.get('/createAccount', (req, res) => {
+    res.render('signup.ejs')
+});
+
+app.post('/signup', async (req, res) => {
+    let fName = req.body.firstName;
+    let lName = req.body.lastName;
+    let username = req.body.username;
+    let password = req.body.password;
+
+    let userSql = `SELECT * 
+                   FROM users 
+                   WHERE username = ?`;
+    let userParams = [username];
+    const [unique] = await conn.query(userSql, userParams);
+    if (unique.length > 0) {
+        return res.status(400).send('Username already taken.');
+    }
+    
+    let saltRounds = 10;
+    let hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    let sql = `INSERT INTO users 
+               (firstName, 
+                lastName, 
+                username, 
+                password) 
+                VALUES(?, ?, ?, ?)`;
+    let sqlParams = [fName, lName, username, hashedPassword];
+            
+    await conn.query(sql, sqlParams);
+res.render('login.ejs')
+});
+
 app.post('/login', async (req, res) => {
     let username = req.body.username;
     let password = req.body.password;
 
     let sql = `SELECT * 
-    FROM admin
+    FROM users
     WHERE username = ?`;
-    let sqlParams = [username, password];
+    let sqlParams = [username];
     const [rows] = await conn.query(sql, sqlParams);
 
     let passwordHash;
-    if(rows.length > 0) { // found at least one record
+    if(rows.length > 0) { 
         passwordHash = rows[0].password;
     } else {
-        res.redirect('/');
+        res.redirect('/welcome');
     }
-
     const match = await bcrypt.compare(password, passwordHash);
-
     if(match) {
-        req.sessionStore.fullName = rows[0].firstName + " " + rows[0].lastName;
         req.session.authenticated = true;
-        res.render('posts.ejs');
+        res.render('welcome.ejs');
     } else {
         res.redirect("/");
     }
