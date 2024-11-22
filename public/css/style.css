@@ -1,12 +1,20 @@
-html {
-    background-color: #00dbdb;
-}
-
 body {
     background-color: #5aeadb;
+    color: white;
     padding: 20px;
     font-family: Arial, sans-serif;
     text-align: center;
+    background-image: url("img/image.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    height: 100vh;
+}
+
+.welcome-box {
+    background-color: rgba(255, 255, 255, .5);
+    border: solid black;
+    color: black;
 }
 
 .container {
