@@ -165,8 +165,10 @@ app.post('/login', async (req, res) => {
     if(rows.length > 0) { 
         passwordHash = rows[0].password;
     } else {
-        res.redirect('/welcome');
+        res.redirect('/');
+        return;
     }
+
     const match = await bcrypt.compare(password, passwordHash);
     if(match) {
         req.session.authenticated = true;
