@@ -7,15 +7,7 @@
     <link href="/css/style.css" rel="stylesheet">
 </head>
 <body>
-    <nav class="navbar">
-        <ul class="nav-list">
-            <li><a href="/" class="nav-link">Home</a></li>
-            <li><a href="/find" class="nav-link">Find</a></li>
-            <li><a href="/posts" class="nav-link nav-selected">Post</a></li>
-            <li><a href="/costs" class="nav-link">Find Ingredient Cost</a></li>
-            <li><a href="/auth" class="nav-link">Log in | | Sign in</a></li>
-        </ul>
-    </nav>
+    <%-include("partials/nav.ejs")%>
 
     <div class="container">
         <button class="button" onclick="document.getElementById('newPostModal').style.display='block'">
