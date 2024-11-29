@@ -171,6 +171,7 @@ app.post('/login', async (req, res) => {
 
     const match = await bcrypt.compare(password, passwordHash);
     if(match) {
+        // console.log(await fetchCocktails());
         req.session.authenticated = true;
         res.render('welcome.ejs');
     } else {
