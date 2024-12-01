@@ -15,7 +15,6 @@ app.use(session({
   secret: 'keyboard cat',
   resave: false,
   saveUninitialized: true,
-  cookie: { secure: true }
 }))
 
 const pool = mysql.createPool({
@@ -114,7 +113,9 @@ app.get('/logout', (req, res) => {
  });
 
 app.get('/profile', isAuthenticated, (req, res) => {
-    res.render('profile.ejs');
+    console.log('Session User:', req.session.user); // Debug log
+
+    res.render('profile.ejs', {user: req.session.user});
  });
 
 app.get('/createAccount', (req, res) => {
@@ -172,6 +173,12 @@ app.post('/login', async (req, res) => {
     const match = await bcrypt.compare(password, passwordHash);
     if(match) {
         req.session.authenticated = true;
+        req.session.user = {
+            id: rows[0].userId,
+            username: rows[0].username,
+            firstName: rows[0].firstName,
+            lastName: rows[0].lastName
+        };
         res.render('welcome.ejs');
     } else {
         res.redirect("/");
