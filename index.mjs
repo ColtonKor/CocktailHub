@@ -63,7 +63,7 @@ app.get('/', (req, res) => {
     res.render('login');
 });
 
-app.get('/welcome', (req, res) => {
+app.get('/welcome', isAuthenticated, (req, res) => {
     res.render('welcome');
 });
 
@@ -103,9 +103,10 @@ app.post('/comment', async (req, res) => {
     res.redirect('/posts');
 });
 
-app.get('/posts', async (req, res) => {
+app.get('/posts', isAuthenticated, async (req, res) => {
     let sql = 'SELECT * FROM Posts NATURAL JOIN users ORDER BY postId DESC';
     const drinks = await fetchCocktails();
+    console.log(drinks);
     const [posts] = await conn.query(sql);
     let UserSql = `SELECT * FROM users WHERE userId = ?`;
     let sqlParams = [userIdSignedIn];
