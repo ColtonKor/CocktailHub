@@ -26,6 +26,7 @@ const pool = mysql.createPool({
     waitForConnections: true
 });
 const conn = await pool.getConnection();
+let userIdSignedIn = -1;
 
 async function fetchCocktails() {
     try {
@@ -70,40 +71,60 @@ app.get('/find', (req, res) => {
     res.render('find');
 });
 
+app.post('/like', async (req, res) => {
+    const { postId } = req.body;
+    let getLikesSql = 'SELECT likes FROM Posts WHERE postId = ?';
+    let sqlParamsLike = [postId];
+    const [likesTable] = await conn.query(getLikesSql, sqlParamsLike);
+    let sql = 'UPDATE Posts SET likes = ? WHERE postId = ?';
+    let sqlParams = [likesTable[0].likes + 1, postId]
+    const [rows] = await conn.query(sql, sqlParams);
+    res.redirect('/posts');
+});
+
+app.post('/likeComment', async (req, res) => {
+    const { commentId } = req.body;
+    let getLikesSql = 'SELECT likes FROM Comments WHERE commentId = ?';
+    let sqlParamsLike = [commentId];
+    const [likesTable] = await conn.query(getLikesSql, sqlParamsLike);
+    let sql = 'UPDATE Comments SET likes = ? WHERE commentId = ?';
+    let sqlParams = [likesTable[0].likes + 1, commentId]
+    const [rows] = await conn.query(sql, sqlParams);
+    res.redirect('/posts');
+});
+
+
+app.post('/comment', async (req, res) => {
+    const { postId } = req.body;
+    const { commentContent } = req.body;
+    let sql = 'INSERT INTO Comments (text, likes, userId, postId) VALUES (?,?,?,?)';
+    let sqlParams = [commentContent, 0, userIdSignedIn, postId]
+    const [rows] = await conn.query(sql, sqlParams);
+    res.redirect('/posts');
+});
+
 app.get('/posts', async (req, res) => {
-    const conn = await pool.getConnection();
-    try {
-        const [posts] = await conn.query('SELECT * FROM posts ORDER BY posts.postId DESC');
-        console.log('Posts from database:', posts); // Add this line
-        const drinks = await fetchCocktails();
-        res.render('posts', { posts, drinks });
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Server error');
-    } finally {
-        conn.release();
-    }
+    let sql = 'SELECT * FROM Posts NATURAL JOIN users ORDER BY postId DESC';
+    const drinks = await fetchCocktails();
+    const [posts] = await conn.query(sql);
+    let UserSql = `SELECT * FROM users WHERE userId = ?`;
+    let sqlParams = [userIdSignedIn];
+    const [user] = await conn.query(UserSql, sqlParams);
+    let sqlComments = 'SELECT * FROM Comments NATURAL JOIN users';
+    const [comments] = await conn.query(sqlComments);
+    res.render('posts', { posts, drinks, user, comments});
+    
 });
 
 app.post('/posts', async (req, res) => {
-    const { username, drinkList, comment } = req.body;
+    const {username, drinkList, caption } = req.body;
     const conn = await pool.getConnection();
-    try {
-        // Format drinks list into content
-        const drinks = Array.isArray(drinkList) ? drinkList.join(', ') : (drinkList || '');
-        const content = `${comment || ''}\n\nDrinks: ${drinks}`;
-        
-        await conn.query(
-            'INSERT INTO posts (userId, title, content, likesCount) VALUES (?, ?, ?, ?)',
-            [1, username, content, 0] // Using userId=1 as default, adjust as needed
-        );
-        res.redirect('/posts');
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Error creating post');
-    } finally {
-        conn.release();
-    }
+    const drinks = Array.isArray(drinkList) ? drinkList.join(', ') : (drinkList || '');
+    const content = `Drinks: ${drinks}`; 
+    let sql = 'INSERT INTO Posts (userId, content, caption, likes) VALUES (?, ?, ?, ?)';
+    let sqlParams = [username, content, caption, 0];
+    const [posts] = await conn.query(sql, sqlParams);
+    res.redirect('/posts');
 });
 
 
@@ -161,6 +182,7 @@ app.post('/login', async (req, res) => {
     WHERE username = ?`;
     let sqlParams = [username];
     const [rows] = await conn.query(sql, sqlParams);
+    userIdSignedIn = rows[0].userId;
 
     let passwordHash;
     if(rows.length > 0) { 
