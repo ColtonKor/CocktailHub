@@ -92,7 +92,7 @@
                 </div>
                 <div class="modal-body">
                     <form method="POST" action="/posts">
-                        <input type="hidden" name="username" value="<%-user[0].userId%>">
+                        <input type="hidden" name="username" value="<%- user %>">
                         <div class="form-group">
                             <label>Select Drinks (up to 3):</label>
                             <select name="drinkList" multiple size="3" required>

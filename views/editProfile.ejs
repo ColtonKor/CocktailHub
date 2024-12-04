@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile Page</title>
+  </head>
+
+  <body>
+    <h1>Edit Profile Info</h1>
+    <%-include("partials/nav.ejs")%>
+    <br /><br />
+
+    First Name:
+    <input type="text" value="<%= user.firstName %>" name="firstName" /><br />
+    Last Name:
+    <input type="text" value="<%= user.lastName %>" name="lastName" /> <br />
+    Username: <input type="text" value="<%= user.username %>" name="username" />
+  </body>
+</html>
