@@ -133,7 +133,6 @@ app.post('/comment', async (req, res) => {
 app.get('/posts', isAuthenticated, async (req, res) => {
     let sql = 'SELECT * FROM Posts NATURAL JOIN users ORDER BY postId DESC';
     const drinks = await fetchCocktails();
-    console.log(drinks);
     const [posts] = await conn.query(sql);
     let UserSql = `SELECT * FROM users WHERE userId = ?`;
     let sqlParams = [req.session.user.id];
@@ -168,9 +167,8 @@ app.get('/logout', (req, res) => {
  // TODO: add profile picture to database, have it be a type file, and the user can edit and add it in the profile edit page
 app.get('/profile', isAuthenticated, async (req, res) => {
     console.log('current user:', req.session.user);
-    let sql = `SELECT * FROM posts NATURAL JOIN users WHERE userId = ? ORDER BY postId DESC`
+    let sql = `SELECT * FROM Posts NATURAL JOIN users WHERE userId = ? ORDER BY postId DESC`
     let sqlParams = req.session.user.id;
-    console.log(req.session.user.id);
     const [posts] = await conn.query(sql, sqlParams);
 
     let sqlComments = 'SELECT * FROM Comments NATURAL JOIN users';
@@ -241,7 +239,6 @@ app.post('/login', async (req, res) => {
 
     const match = await bcrypt.compare(password, passwordHash);
     if(match) {
-        // console.log(await fetchCocktails());
         req.session.authenticated = true;
         req.session.user = {
             id: rows[0].userId,
