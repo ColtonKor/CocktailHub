@@ -32,41 +32,14 @@
         <br />
         <div class="post-footer">
           <figure>
-            <form action="/like" method="POST">
-              <input
-                type="hidden"
-                name="postId"
-                value="<%= posts[i].postId %>"
-              />
-              <button
-                type="submit"
-                style="background: none; border: none; cursor: pointer"
-              >
-                ❤️ <%= posts[i].likes %>
-              </button>
-            </form>
-          </figure>
-          <figure>
             <span
               >Posted: <%= new Date(posts[i].datePosted).toLocaleDateString()
               %></span
             >
           </figure>
-          <figure>
-            <button class="toggle">Open Comments</button>
-          </figure>
         </div>
         <br />
         <div class="comments-section">
-          <form action="/comment" method="POST">
-            <input type="hidden" name="postId" value="<%= posts[i].postId %>" />
-            <textarea
-              name="commentContent"
-              placeholder="Add your comment..."
-              required
-            ></textarea>
-            <button type="submit">Post Comment</button>
-          </form>
           <h4>Comments:</h4>
           <% const postComments = comments.filter(comment => comment.postId ===
           posts[i].postId); %> <% if (postComments.length > 0) { %> <% for (let
@@ -74,19 +47,6 @@
           <div class="comment">
             <strong><%= postComments[j].username %>:</strong>
             <p><%= postComments[j].text %></p>
-            <form action="/likeComment" method="POST">
-              <input
-                type="hidden"
-                name="commentId"
-                value="<%= postComments[j].commentId %>"
-              />
-              <button
-                type="submit"
-                style="background: none; border: none; cursor: pointer"
-              >
-                ❤️ <%= postComments[j].likes %>
-              </button>
-            </form>
           </div>
           <% } %> <% } else { %>
           <p>No comments yet!</p>
