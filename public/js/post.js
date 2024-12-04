@@ -22,9 +22,9 @@ for(let i of commentVis){
 }
 
 function openComments(){
-  const post = event.target.closest('.post');
-  const commentsSection = post.querySelector('.comments-section');
-  const toggleButton = event.target;
+  let post = event.target.closest('.post');
+  let commentsSection = post.querySelector('.comments-section');
+  let toggleButton = event.target;
   if (commentsSection.style.display === 'none' || commentsSection.style.display === '') {
     commentsSection.style.display = 'block';
     toggleButton.textContent = 'Close Comments';
