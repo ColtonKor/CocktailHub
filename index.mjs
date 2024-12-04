@@ -58,7 +58,19 @@ async function fetchCocktails() {
     }
 }
 
+async function fetchCocktailDetails(name) {
+    try {
+        const response = await fetch(`https://www.thecocktaildb.com/api/json/v1/1/search.php?s=${encodeURIComponent(name)}`);
+        const data = await response.json();
+        return data.drinks ? data.drinks[0] : null;
+    } catch (error) {
+        console.error('Error fetching cocktail details:', error);
+        return null;
+    }
+}
+
 // Routes
+
 app.get('/', (req, res) => {
     res.render('login');
 });
@@ -67,8 +79,24 @@ app.get('/welcome', (req, res) => {
     res.render('welcome');
 });
 
-app.get('/find', (req, res) => {
-    res.render('find');
+app.get('/find', async (req, res) => {
+    try {
+        const drinks = await fetchCocktails();
+        res.render('find', { drinks });
+    } catch (error) {
+        console.error('Error:', error);
+        res.render('find', { drinks: [] });
+    }
+});
+
+app.get('/cocktail/:name', async (req, res) => {
+    try {
+        const cocktail = await fetchCocktailDetails(req.params.name);
+        res.json(cocktail);
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ error: 'Failed to fetch cocktail details' });
+    }
 });
 
 app.get('/posts', async (req, res) => {
