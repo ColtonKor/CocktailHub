@@ -20,27 +20,27 @@
 
         <div class="posts-container">
             <% if (posts && posts.length > 0) { %>
-                <% posts.forEach(post => { %>
+                <% for (let i = 0; i < posts.length; i++) { %>
                     <div class="post" id="postBackground">
-                        <strong>User:</strong> <%= post.username %>
+                        <strong>User:</strong> <%= posts[i].username %>
                         <div class="content">
-                            <p>  <%= post.content %></p>
+                            <p>  <%= posts[i].content %></p>
                         </div>
                         <div class="caption">
-                            <p>  <%= post.caption %></p>
+                            <p>  <%= posts[i].caption %></p>
                         </div>
                         <br>
                         <div class="post-footer">
                             <figure>
                                 <form action="/like" method="POST">
-                                    <input type="hidden" name="postId" value="<%= post.postId %>">
+                                    <input type="hidden" name="postId" value="<%= posts[i].postId %>">
                                     <button type="submit" style="background:none; border:none; cursor:pointer;">
-                                        ❤️ <%= post.likes %>
+                                        ❤️ <%= posts[i].likes %>
                                     </button>
                                 </form>
                             </figure>
                             <figure>
-                                <span>Posted: <%= new Date(post.datePosted).toLocaleDateString() %></span>
+                                <span>Posted: <%= new Date(posts[i].datePosted).toLocaleDateString() %></span>
                             </figure>
                             <figure>
                                 <button class="toggle">Open Comments</button>
@@ -49,36 +49,39 @@
                         <br>
                         <div class="comments-section">
                             <form action="/comment" method="POST">
-                                <input type="hidden" name="postId" value="<%= post.postId %>">
+                                <input type="hidden" name="postId" value="<%= posts[i].postId %>">
                                 <textarea name="commentContent" placeholder="Add your comment..." required></textarea>
                                 <button type="submit">Post Comment</button>
                             </form>
                             <h4>Comments:</h4>
-                            <% const postComments = comments.filter(comment => comment.postId === post.postId); %>
+                            <% 
+                                const postComments = comments.filter(comment => comment.postId === posts[i].postId); 
+                            %>
                             <% if (postComments.length > 0) { %>
-                                <% postComments.forEach(comment => { %>
+                                <% for (let j = 0; j < postComments.length; j++) { %>
                                     <div class="comment">
-                                        <strong><%= comment.username %>:</strong>
-                                        <p><%= comment.text %></p>
+                                        <strong><%= postComments[j].username %>:</strong>
+                                        <p><%= postComments[j].text %></p>
                                         <form action="/likeComment" method="POST">
-                                            <input type="hidden" name="commentId" value="<%= comment.commentId %>">
+                                            <input type="hidden" name="commentId" value="<%= postComments[j].commentId %>">
                                             <button type="submit" style="background:none; border:none; cursor:pointer;">
-                                                ❤️ <%= comment.likes %>
+                                                ❤️ <%= postComments[j].likes %>
                                             </button>
                                         </form>
                                     </div>
-                                <% }) %>
+                                <% } %>
                             <% } else { %>
                                 <p>No comments yet!</p>
                             <% } %>
                         </div>
                     </div>
                     <br><br><br>
-                <% }) %>
+                <% } %>
             <% } else { %>
                 <p>No posts yet!</p>
             <% } %>
         </div>
+        
         
         <div class="modal" tabindex="-1" id="newPostModal">
             <div class="modal-dialog">
