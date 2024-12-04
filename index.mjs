@@ -26,7 +26,6 @@ const pool = mysql.createPool({
     waitForConnections: true
 });
 const conn = await pool.getConnection();
-let userIdSignedIn = -1;
 
 async function fetchCocktails() {
     try {
@@ -126,7 +125,7 @@ app.post('/comment', async (req, res) => {
     const { postId } = req.body;
     const { commentContent } = req.body;
     let sql = 'INSERT INTO Comments (text, likes, userId, postId) VALUES (?,?,?,?)';
-    let sqlParams = [commentContent, 0, userIdSignedIn, postId]
+    let sqlParams = [commentContent, 0, req.session.user.id, postId]
     const [rows] = await conn.query(sql, sqlParams);
     res.redirect('/posts');
 });
@@ -137,11 +136,11 @@ app.get('/posts', isAuthenticated, async (req, res) => {
     console.log(drinks);
     const [posts] = await conn.query(sql);
     let UserSql = `SELECT * FROM users WHERE userId = ?`;
-    let sqlParams = [userIdSignedIn];
+    let sqlParams = [req.session.user.id];
     const [user] = await conn.query(UserSql, sqlParams);
     let sqlComments = 'SELECT * FROM Comments NATURAL JOIN users';
     const [comments] = await conn.query(sqlComments);
-    res.render('posts', { posts, drinks, user, comments});
+    res.render('posts', { posts, drinks, user: req.session.user.id, comments});
     
 });
 
@@ -166,11 +165,27 @@ app.get('/logout', (req, res) => {
     res.render('login.ejs')
  });
 
-app.get('/profile', isAuthenticated, (req, res) => {
-    console.log('Session User:', req.session.user); // Debug log
+ // TODO: add profile picture to database, have it be a type file, and the user can edit and add it in the profile edit page
+app.get('/profile', isAuthenticated, async (req, res) => {
+    console.log('current user:', req.session.user);
+    let sql = `SELECT * FROM posts NATURAL JOIN users WHERE userId = ? ORDER BY postId DESC`
+    let sqlParams = req.session.user.id;
+    console.log(req.session.user.id);
+    const [posts] = await conn.query(sql, sqlParams);
 
-    res.render('profile.ejs', {user: req.session.user});
+    let sqlComments = 'SELECT * FROM Comments NATURAL JOIN users';
+    const [comments] = await conn.query(sqlComments);
+    
+    res.render('profile.ejs', {user: req.session.user, posts, comments});
  });
+
+app.get('/profile/edit', isAuthenticated, (req, res) => {
+    console.log('current user:', req.session.user);
+    res.render('editProfile.ejs', {user: req.session.user});
+});
+
+ 
+ 
 
 app.get('/createAccount', (req, res) => {
     res.render('signup.ejs')
@@ -215,7 +230,6 @@ app.post('/login', async (req, res) => {
     WHERE username = ?`;
     let sqlParams = [username];
     const [rows] = await conn.query(sql, sqlParams);
-    userIdSignedIn = rows[0].userId;
 
     let passwordHash;
     if(rows.length > 0) { 
