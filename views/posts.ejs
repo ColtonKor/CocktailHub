@@ -43,15 +43,16 @@
                                 <span>Posted: <%= new Date(post.datePosted).toLocaleDateString() %></span>
                             </figure>
                             <figure>
-                                <form action="/comment" method="POST">
-                                    <input type="hidden" name="postId" value="<%= post.postId %>">
-                                    <textarea name="commentContent" placeholder="Add your comment..." required></textarea>
-                                    <button type="submit">Post Comment</button>
-                                </form>
+                                <button class="toggle">Open Comments</button>
                             </figure>
                         </div>
                         <br>
                         <div class="comments-section">
+                            <form action="/comment" method="POST">
+                                <input type="hidden" name="postId" value="<%= post.postId %>">
+                                <textarea name="commentContent" placeholder="Add your comment..." required></textarea>
+                                <button type="submit">Post Comment</button>
+                            </form>
                             <h4>Comments:</h4>
                             <% const postComments = comments.filter(comment => comment.postId === post.postId); %>
                             <% if (postComments.length > 0) { %>
@@ -71,8 +72,8 @@
                                 <p>No comments yet!</p>
                             <% } %>
                         </div>
-                        <br>
                     </div>
+                    <br><br><br>
                 <% }) %>
             <% } else { %>
                 <p>No posts yet!</p>
