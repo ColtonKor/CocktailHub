@@ -1,11 +1,73 @@
-html {
-    background-color: #00dbdb;
-}
-
 body {
-    background-color: #5aeadb;
+    color: white;
     padding: 20px;
     font-family: Arial, sans-serif;
+    text-align: center;
+    background-image: url("../img/background04.jpg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    height: 100%;
+}
+
+.nav-link {
+    display: flex;
+    flex-direction: column;
+}
+
+.linkLabel {
+    margin-top: 1px;
+}
+
+#dash {
+    color: black;
+}
+
+#postBackground{
+    background-color: white;
+}
+.nosifer-regular {
+    color: black;
+    font-family: "Nosifer", serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.noto-sans-ogham-regular {
+    font-family: "Noto Sans Ogham", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+
+.libre-barcode-39-text-regular {
+    font-family: "Libre Barcode 39 Text", system-ui;
+    font-weight: 400;
+    font-style: normal;
+}
+
+
+.welcome-box {
+    /* background-image: url("../img/background02.jpg"); */
+    background-position: center;
+    background-size: cover;
+    background-color: rgba(255, 255, 255, 0.342);
+    box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.5);
+    color: black;
+    border: 5px solid #121412;
+    border-radius: 40px;
+}
+
+.protest-revolution-regular {
+    font-family: "Major Mono Display", monospace;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.rubik-moonrocks-regular {
+    font-family: "Rubik Moonrocks", sans-serif;
+    font-weight: 400;
+    font-style: normal;
 }
 
 .container {
@@ -18,7 +80,7 @@ body {
     display: flex;
     justify-content: space-between;
     padding: 1rem;
-    background-color: #f0f0f0;
+    /* background-color: #f0f0f0; */
     margin-bottom: 2rem;
 }
 
@@ -35,7 +97,7 @@ body {
     border-radius: 8px;
     padding: 20px;
     margin-bottom: 20px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .post-header {
@@ -78,7 +140,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.5);
+    background-color: rgba(0, 0, 0, 0.5);
 }
 
 .modal-content {
