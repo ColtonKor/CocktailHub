@@ -152,6 +152,10 @@ app.post('/posts', async (req, res) => {
     const content = `Drinks: ${drinks}`; 
     let sql = 'INSERT INTO Posts (userId, content, caption, likes) VALUES (?, ?, ?, ?)';
     let sqlParams = [username, content, caption, 0];
+
+    let sqlUpdate = 'UPDATE users SET postCount = postCount + 1 WHERE userId = ?';
+    let sqlParamsUpdate = [username];
+    const [update] = await conn.query(sqlUpdate, sqlParamsUpdate);
     const [posts] = await conn.query(sql, sqlParams);
     res.redirect('/posts');
 });
