@@ -18,7 +18,18 @@
   </head>
 
   <body>
-    <h1>Profile Info</h1>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h1>Profile Info</h1>
+        <div>
+            <a href="/profile/edit">
+                <button class="btn btn-primary btn-sm">
+                    Edit Profile
+                </button>
+            </a>
+        </div>
+    </div>
+    
+
     <%-include("partials/nav.ejs")%>
     <br /><br />
 
