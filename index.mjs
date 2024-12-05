@@ -178,12 +178,35 @@ app.get('/profile', isAuthenticated, async (req, res) => {
  });
 
 app.get('/profile/edit', isAuthenticated, (req, res) => {
-    console.log('current user:', req.session.user);
     res.render('editProfile.ejs', {user: req.session.user});
 });
 
- 
- 
+app.post('/profile/edit', isAuthenticated, async (req, res) => {
+    let firstName = req.body.firstName;
+    let lastName = req.body.lastName;
+    let username = req.body.username;
+    let userId = req.session.user.id;
+    req.session.user.firstName = firstName;
+    req.session.user.lastName = lastName;
+    req.session.user.username = username;
+    let sql = `UPDATE users
+               SET firstName =?,
+               lastName = ?,
+               username = ?
+               WHERE userId = ?`;
+    let sqlParams = [firstName, lastName, username, userId];
+    const [userData] = await conn.query(sql, sqlParams);
+    console.log(userData);
+    res.redirect('/profile');
+});
+
+app.get('/profile/deletePost', isAuthenticated, async (req, res) => {
+    let postId = req.query.postId;
+    let sql = `DELETE FROM Posts WHERE postId = ?`;
+    const [rows] = await conn.query(sql, [postId]);
+
+    res.redirect('/profile');
+});
 
 app.get('/createAccount', (req, res) => {
     res.render('signup.ejs')

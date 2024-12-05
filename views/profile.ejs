@@ -11,6 +11,10 @@
       rel="stylesheet"
     />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+      rel="stylesheet"
+    />
   </head>
 
   <body>
@@ -19,8 +23,8 @@
     <br /><br />
 
     <div class="posts-container">
-      <% if (posts && posts.length > 0) { %> <% for (let i = 0; i <
-      posts.length; i++) { %>
+      <% if (posts && posts.length > 0) { %> 
+        <% for (let i = 0; i <posts.length; i++) { %>
       <div class="post" id="postBackground">
         <strong>User:</strong> <%= posts[i].username %>
         <div class="content">
@@ -32,41 +36,14 @@
         <br />
         <div class="post-footer">
           <figure>
-            <form action="/like" method="POST">
-              <input
-                type="hidden"
-                name="postId"
-                value="<%= posts[i].postId %>"
-              />
-              <button
-                type="submit"
-                style="background: none; border: none; cursor: pointer"
-              >
-                ❤️ <%= posts[i].likes %>
-              </button>
-            </form>
-          </figure>
-          <figure>
             <span
               >Posted: <%= new Date(posts[i].datePosted).toLocaleDateString()
               %></span
             >
           </figure>
-          <figure>
-            <button class="toggle">Open Comments</button>
-          </figure>
         </div>
         <br />
         <div class="comments-section">
-          <form action="/comment" method="POST">
-            <input type="hidden" name="postId" value="<%= posts[i].postId %>" />
-            <textarea
-              name="commentContent"
-              placeholder="Add your comment..."
-              required
-            ></textarea>
-            <button type="submit">Post Comment</button>
-          </form>
           <h4>Comments:</h4>
           <% const postComments = comments.filter(comment => comment.postId ===
           posts[i].postId); %> <% if (postComments.length > 0) { %> <% for (let
@@ -74,24 +51,19 @@
           <div class="comment">
             <strong><%= postComments[j].username %>:</strong>
             <p><%= postComments[j].text %></p>
-            <form action="/likeComment" method="POST">
-              <input
-                type="hidden"
-                name="commentId"
-                value="<%= postComments[j].commentId %>"
-              />
-              <button
-                type="submit"
-                style="background: none; border: none; cursor: pointer"
-              >
-                ❤️ <%= postComments[j].likes %>
-              </button>
-            </form>
           </div>
           <% } %> <% } else { %>
           <p>No comments yet!</p>
           <% } %>
         </div>
+        <div class="text-center">
+          <a href="/profile/deletePost?postId=<%= posts[i].postId %>">
+            <button class="btn btn-danger btn-sm">
+              <i class="fas fa-trash"></i>
+            </button>
+          </a>
+        </div>
+        <br />
       </div>
       <br /><br /><br />
       <% } %> <% } else { %>
