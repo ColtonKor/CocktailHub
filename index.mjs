@@ -186,6 +186,9 @@ app.post('/profile/edit', isAuthenticated, async (req, res) => {
     let lastName = req.body.lastName;
     let username = req.body.username;
     let userId = req.session.user.id;
+    req.session.user.firstName = firstName;
+    req.session.user.lastName = lastName;
+    req.session.user.username = username;
     let sql = `UPDATE users
                SET firstName =?,
                lastName = ?,
@@ -194,6 +197,14 @@ app.post('/profile/edit', isAuthenticated, async (req, res) => {
     let sqlParams = [firstName, lastName, username, userId];
     const [userData] = await conn.query(sql, sqlParams);
     console.log(userData);
+    res.redirect('/profile');
+});
+
+app.get('/profile/deletePost', isAuthenticated, async (req, res) => {
+    let postId = req.query.postId;
+    let sql = `DELETE FROM Posts WHERE postId = ?`;
+    const [rows] = await conn.query(sql, [postId]);
+
     res.redirect('/profile');
 });
 
