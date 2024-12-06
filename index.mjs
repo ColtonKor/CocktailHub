@@ -78,7 +78,7 @@ app.get('/welcome', isAuthenticated, (req, res) => {
     res.render('welcome');
 });
 
-app.get('/find', async (req, res) => {
+app.get('/find', isAuthenticated, async (req, res) => {
     try {
         const drinks = await fetchCocktails();
         res.render('find', { drinks });
@@ -90,6 +90,7 @@ app.get('/find', async (req, res) => {
 
 app.get('/cocktail/:name', async (req, res) => {
     try {
+        console.log(req.params.name);
         const cocktail = await fetchCocktailDetails(req.params.name);
         res.json(cocktail);
     } catch (error) {
@@ -131,28 +132,31 @@ app.post('/comment', async (req, res) => {
 });
 
 app.get('/posts', isAuthenticated, async (req, res) => {
-    let sql = 'SELECT * FROM Posts NATURAL JOIN users ORDER BY postId DESC';
+    let keyword = req.query.keyword || '';
+    let sql = 'SELECT * FROM Posts NATURAL JOIN users WHERE username LIKE ? ORDER BY postId DESC';
+    let postSearch = [`%${keyword}%`];
     const drinks = await fetchCocktails();
-    const [posts] = await conn.query(sql);
+    const [posts] = await conn.query(sql, postSearch);
     let UserSql = `SELECT * FROM users WHERE userId = ?`;
     let sqlParams = [req.session.user.id];
     const [user] = await conn.query(UserSql, sqlParams);
     let sqlComments = 'SELECT * FROM Comments NATURAL JOIN users';
     const [comments] = await conn.query(sqlComments);
     res.render('posts', { posts, drinks, user: req.session.user.id, comments});
-    
 });
 
 app.post('/posts', async (req, res) => {
-    const {username, drinkList, caption } = req.body;
-    const conn = await pool.getConnection();
-    const drinks = Array.isArray(drinkList) ? drinkList.join(', ') : (drinkList || '');
-    const content = `Drinks: ${drinks}`; 
-    let sql = 'INSERT INTO Posts (userId, content, caption, likes) VALUES (?, ?, ?, ?)';
-    let sqlParams = [username, content, caption, 0];
+    let drink = req.body.drinkList;
+    let caption = req.body.caption;
+    // console.log(caption);
+    const content = `Drink: ${drink}`; 
+    const cocktail = await fetchCocktailDetails(drink);
+    // console.log(cocktail);
+    let sql = 'INSERT INTO Posts (userId, content, caption, likes, image, instructions) VALUES (?, ?, ?, ?, ?, ?)';
+    let sqlParams = [req.session.user.id, content, caption, 0, cocktail.strDrinkThumb, cocktail.strInstructions];
 
     let sqlUpdate = 'UPDATE users SET postCount = postCount + 1 WHERE userId = ?';
-    let sqlParamsUpdate = [username];
+    let sqlParamsUpdate = [req.session.user.id];
     const [update] = await conn.query(sqlUpdate, sqlParamsUpdate);
     const [posts] = await conn.query(sql, sqlParams);
     res.redirect('/posts');

@@ -19,6 +19,13 @@
         <button class="button" id="newPost">
             New Post
         </button>
+        <form action="/posts">
+            <strong>Search: </strong>
+            <input type="text" name="keyword" placeholder="Search by Username">
+            <button class="button">
+                Search
+            </button>
+        </form>
         <br>
         <br>
 
@@ -30,8 +37,15 @@
                         <div class="content">
                             <p>  <%= posts[i].content %></p>
                         </div>
+                        <div class="image">
+                            <img src="<%-posts[i].image%>">
+                        </div>
+                        <br><br><br>
+                        <div class="instruction">
+                            <p> Instructions:  <%= posts[i].instructions %></p>
+                        </div>
                         <div class="caption">
-                            <p>  <%= posts[i].caption %></p>
+                            <p> Caption:  <%= posts[i].caption %></p>
                         </div>
                         <br>
                         <div class="post-footer">

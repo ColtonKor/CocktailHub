@@ -45,10 +45,17 @@
       <div class="post" id="postBackground">
         <strong>User:</strong> <%= post.username %>
         <div class="content">
-          <p><%= post.content %></p>
+          <p>  <%= posts[i].content %></p>
+        </div>
+        <div class="image">
+          <img src="<%-posts[i].image%>">
+        </div>
+        <br><br><br>
+        <div class="instruction">
+          <p> Instructions:  <%= posts[i].instructions %></p>
         </div>
         <div class="caption">
-          <p><%= post.caption %></p>
+          <p> Caption:  <%= posts[i].caption %></p>
         </div>
         <br />
         <div class="post-footer">
