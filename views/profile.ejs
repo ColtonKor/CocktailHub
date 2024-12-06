@@ -18,10 +18,19 @@
   </head>
 
   <body>
+    <%-include("partials/nav.ejs")%>
+    <hr style="border: 3px solid black" />
     <div
       style="display: flex; justify-content: space-between; align-items: center"
     >
-      <h1>Profile Info</h1>
+      <div style="display: flex; align-items: center">
+        <img
+          class="rounded-circle border border-dark"
+          src="<%= user.pfp %>"
+          style="width: 20%; background-color: lightgray"
+        />
+        <h1 style="padding-left: 10px"><%= user.username %></h1>
+      </div>
       <div>
         <a href="/profile/edit">
           <button class="btn btn-primary btn-sm">Edit Profile</button>
@@ -29,7 +38,6 @@
       </div>
     </div>
 
-    <%-include("partials/nav.ejs")%>
     <br /><br />
 
     <div class="posts-container">

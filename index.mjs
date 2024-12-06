@@ -228,13 +228,16 @@ app.post('/signup', async (req, res) => {
     let saltRounds = 10;
     let hashedPassword = await bcrypt.hash(password, saltRounds);
 
+    let pfpURL = `https://robohash.org/${username}.png?set=set4`;
+
     let sql = `INSERT INTO users 
                (firstName, 
                 lastName, 
                 username, 
-                password) 
-                VALUES(?, ?, ?, ?)`;
-    let sqlParams = [fName, lName, username, hashedPassword];
+                password,
+                profilePicture) 
+                VALUES(?, ?, ?, ?, ?)`;
+    let sqlParams = [fName, lName, username, hashedPassword, pfpURL];
             
     await conn.query(sql, sqlParams);
 res.render('login.ejs')
@@ -265,7 +268,8 @@ app.post('/login', async (req, res) => {
             id: rows[0].userId,
             username: rows[0].username,
             firstName: rows[0].firstName,
-            lastName: rows[0].lastName
+            lastName: rows[0].lastName,
+            pfp: rows[0].profilePicture
         };
         res.render('welcome.ejs');
     } else {
