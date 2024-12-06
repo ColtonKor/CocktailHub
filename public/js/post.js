@@ -33,4 +33,17 @@ function openComments(){
     toggleButton.textContent = 'Open Comments';
   }
 }
-  
+
+async function searchCocktail(event) {
+  event.preventDefault();
+  const cocktailName = document.getElementById('search').value;
+  if (!cocktailName) return;
+
+  try {
+      const response = await fetch(`/cocktail/${encodeURIComponent(cocktailName)}`);
+      const cocktail = await response.json();
+  } catch (error) {
+      console.error('Error:', error);
+      alert('Failed to fetch cocktail details');
+  }
+}
