@@ -112,7 +112,7 @@
                     <form method="POST" action="/posts">
                         <input type="hidden" name="username" value="<%- user %>">
                         <label for="search">Search for a cocktail:</label>
-                        <input type="text" id="search" name="search" placeholder="Enter a cocktail" list="cocktail-list" required>
+                        <input type="text" id="search" name="drinkList" placeholder="Enter a cocktail" list="cocktail-list" required>
                         <datalist id="cocktail-list">
                             <% if (drinks && drinks.length > 0) { %>
                                 <% drinks.forEach(drink => { %>
