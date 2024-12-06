@@ -34,7 +34,7 @@
         <div class="modal-content">
             <span class="close" onclick="document.getElementById('cocktailModal').style.display='none'">&times;</span>
             <div id="cocktailDetails">
-                <!-- Content populated by JavaScript -->
+                <!-- Content will be populated by JavaScript -->
             </div>
         </div>
     </div>
@@ -50,7 +50,7 @@
                 const cocktail = await response.json();
                 
                 if (cocktail) {
-                    // HTML content for modal
+                    // Create HTML content for the modal
                     let ingredientsList = '';
                     for (let i = 1; i <= 15; i++) {
                         const ingredient = cocktail[`strIngredient${i}`];
@@ -68,7 +68,6 @@
                         <h3>Ingredients:</h3>
                         <ul>${ingredientsList}</ul>
                         <p><strong>Glass:</strong> ${cocktail.strGlass}</p>
-                        <br>
                     `;
 
                     document.getElementById('cocktailDetails').innerHTML = modalContent;
@@ -82,7 +81,7 @@
             }
         }
 
-        // Closes modal when clicking outside
+        // Close modal when clicking outside
         window.onclick = function(event) {
             const modal = document.getElementById('cocktailModal');
             if (event.target == modal) {

@@ -13,19 +13,35 @@ body {
 .nav-link {
     display: flex;
     flex-direction: column;
+    text-decoration: none;
+    color: white;
 }
 
 .linkLabel {
     margin-top: 1px;
+    color: white;
+    font-family: "Roboto", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+}
+
+.imgNav {
+    width: 50px;
+    height: 50px;
+}
+
+#logoutRight {
+    text-align: right;
 }
 
 #dash {
     color: black;
 }
 
-#postBackground{
+#postBackground {
     background-color: white;
 }
+
 .nosifer-regular {
     color: black;
     font-family: "Nosifer", serif;
@@ -56,6 +72,7 @@ body {
     color: black;
     border: 5px solid #121412;
     border-radius: 40px;
+    padding-bottom: 20px;
 }
 
 .protest-revolution-regular {
