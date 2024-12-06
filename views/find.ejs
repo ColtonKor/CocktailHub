@@ -5,19 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Find Cocktails</title>
-    <link href="/css/style.css" rel="stylesheet">
+    <link href="/css/style2.css" rel="stylesheet">
 </head>
 
 <body>
-    <nav class="navbar">
-        <ul class="nav-list">
-            <li><a href="/" class="nav-link nav-selected">Home</a></li>
-            <li><a href="/find" class="nav-link">Find</a></li>
-            <li><a href="/posts" class="nav-link">Post</a></li>
-            <li><a href="/costs" class="nav-link">Find Ingredient Cost</a></li>
-            <li><a href="/login" class="nav-link">Log in | | Sign in</a></li>
-        </ul>
-    </nav>
+    <%-include("partials/nav.ejs")%>
 
     <div class="welcome-box">
         <h1>Find A Cocktail</h1>
@@ -42,7 +34,7 @@
         <div class="modal-content">
             <span class="close" onclick="document.getElementById('cocktailModal').style.display='none'">&times;</span>
             <div id="cocktailDetails">
-                <!-- Content will be populated by JavaScript -->
+                <!-- Content populated by JavaScript -->
             </div>
         </div>
     </div>
@@ -58,7 +50,7 @@
                 const cocktail = await response.json();
                 
                 if (cocktail) {
-                    // Create HTML content for the modal
+                    // HTML content for modal
                     let ingredientsList = '';
                     for (let i = 1; i <= 15; i++) {
                         const ingredient = cocktail[`strIngredient${i}`];
@@ -76,6 +68,7 @@
                         <h3>Ingredients:</h3>
                         <ul>${ingredientsList}</ul>
                         <p><strong>Glass:</strong> ${cocktail.strGlass}</p>
+                        <br>
                     `;
 
                     document.getElementById('cocktailDetails').innerHTML = modalContent;
@@ -89,7 +82,7 @@
             }
         }
 
-        // Close modal when clicking outside
+        // Closes modal when clicking outside
         window.onclick = function(event) {
             const modal = document.getElementById('cocktailModal');
             if (event.target == modal) {
