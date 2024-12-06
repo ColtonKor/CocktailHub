@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cocktail Hub - Posts</title>
     <link href="/css/style.css" rel="stylesheet">
-    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <!-- <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -97,22 +97,21 @@
                 <div class="modal-body">
                     <form method="POST" action="/posts">
                         <input type="hidden" name="username" value="<%- user %>">
-                        <div class="form-group">
-                            <label>Select Drinks (up to 3):</label>
-                            <select name="drinkList" multiple size="3" required>
-                                <% if (drinks && drinks.length > 0) { %>
-                                    <% drinks.forEach(drink => { %>
-                                        <option value="<%= drink %>"><%= drink %></option>
-                                    <% }) %>
-                                <% } %>
-                            </select>
-                        </div>
-
+                        <label for="search">Search for a cocktail:</label>
+                        <input type="text" id="search" name="search" placeholder="Enter a cocktail" list="cocktail-list" required>
+                        <datalist id="cocktail-list">
+                            <% if (drinks && drinks.length > 0) { %>
+                                <% drinks.forEach(drink => { %>
+                                    <option value="<%= drink %>"><%= drink %></option>
+                                <% }) %>
+                            <% } %>
+                        </datalist>
+                    
                         <div class="form-group">
                             <label>Caption:</label>
-                            <textarea name="caption" rows="3"></textarea>
+                            <textarea name="caption" rows="3" required></textarea>
                         </div>
-
+                    
                         <button type="submit">Create Post</button>
                     </form>
                 </div>
