@@ -18,11 +18,19 @@ body {
 }
 
 .linkLabel {
+<<<<<<< Updated upstream
   margin-top: 1px;
 
   font-family: "Roboto", sans-serif;
   font-weight: 700;
   font-style: normal;
+=======
+    margin-top: 1px;
+    color: white;
+    font-family: "Roboto", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+>>>>>>> Stashed changes
 }
 
 .imgNav {
