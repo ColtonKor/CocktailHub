@@ -210,6 +210,15 @@ app.get('/profile/deletePost', isAuthenticated, async (req, res) => {
     res.redirect('/profile');
 });
 
+app.get('/comment/delete', isAuthenticated, async (req, res) => {
+    let commentId = req.query.commentId;
+    console.log(commentId);
+    let sql = `DELETE FROM Comments WHERE commentId = ?`;
+    const [rows] = await conn.query(sql, [commentId]);
+
+    res.redirect('/posts');
+});
+
 app.get('/createAccount', (req, res) => {
     res.render('signup.ejs')
 });
