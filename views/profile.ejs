@@ -18,57 +18,54 @@
   </head>
 
   <body>
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h1>Profile Info</h1>
-        <div>
-            <a href="/profile/edit">
-                <button class="btn btn-primary btn-sm">
-                    Edit Profile
-                </button>
-            </a>
-        </div>
+    <div
+      style="display: flex; justify-content: space-between; align-items: center"
+    >
+      <h1>Profile Info</h1>
+      <div>
+        <a href="/profile/edit">
+          <button class="btn btn-primary btn-sm">Edit Profile</button>
+        </a>
+      </div>
     </div>
-    
 
     <%-include("partials/nav.ejs")%>
     <br /><br />
 
     <div class="posts-container">
-      <% if (posts && posts.length > 0) { %> 
-        <% for (let i = 0; i <posts.length; i++) { %>
+      <% if (posts && posts.length > 0) { %> <% for (let post of posts) { %>
       <div class="post" id="postBackground">
-        <strong>User:</strong> <%= posts[i].username %>
+        <strong>User:</strong> <%= post.username %>
         <div class="content">
-          <p><%= posts[i].content %></p>
+          <p><%= post.content %></p>
         </div>
         <div class="caption">
-          <p><%= posts[i].caption %></p>
+          <p><%= post.caption %></p>
         </div>
         <br />
         <div class="post-footer">
           <figure>
-            <span
-              >Posted: <%= new Date(posts[i].datePosted).toLocaleDateString()
-              %></span
-            >
+            <span>
+              Posted: <%= new Date(post.datePosted).toLocaleDateString()%>
+            </span>
           </figure>
         </div>
         <br />
         <div class="comments-section">
           <h4>Comments:</h4>
-          <% const postComments = comments.filter(comment => comment.postId ===
-          posts[i].postId); %> <% if (postComments.length > 0) { %> <% for (let
-          j = 0; j < postComments.length; j++) { %>
+          <% let postComments = comments.filter(comment => comment.postId ===
+          post.postId); %> <% if (postComments.length > 0) { %> <% for (let
+          postComment of postComments) { %>
           <div class="comment">
-            <strong><%= postComments[j].username %>:</strong>
-            <p><%= postComments[j].text %></p>
+            <strong><%= postComment.username %>:</strong>
+            <p><%= postComment.text %></p>
           </div>
           <% } %> <% } else { %>
-          <p>No comments yet!</p>
+          <p class="comment">No comments yet!</p>
           <% } %>
         </div>
         <div class="text-center">
-          <a href="/profile/deletePost?postId=<%= posts[i].postId %>">
+          <a href="/profile/deletePost?postId=<%= post.postId %>">
             <button class="btn btn-danger btn-sm">
               <i class="fas fa-trash"></i>
             </button>

@@ -166,7 +166,6 @@ app.get('/logout', (req, res) => {
 
  // TODO: add profile picture to database, have it be a type file, and the user can edit and add it in the profile edit page
 app.get('/profile', isAuthenticated, async (req, res) => {
-    console.log('current user:', req.session.user);
     let sql = `SELECT * FROM Posts NATURAL JOIN users WHERE userId = ? ORDER BY postId DESC`
     let sqlParams = req.session.user.id;
     const [posts] = await conn.query(sql, sqlParams);
@@ -196,7 +195,6 @@ app.post('/profile/edit', isAuthenticated, async (req, res) => {
                WHERE userId = ?`;
     let sqlParams = [firstName, lastName, username, userId];
     const [userData] = await conn.query(sql, sqlParams);
-    console.log(userData);
     res.redirect('/profile');
 });
 
