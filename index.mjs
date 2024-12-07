@@ -81,11 +81,24 @@ app.get('/welcome', isAuthenticated, (req, res) => {
 app.get('/find', isAuthenticated, async (req, res) => {
     try {
         const drinks = await fetchCocktails();
+        // console.log(drinks);
         res.render('find', { drinks });
     } catch (error) {
         console.error('Error:', error);
         res.render('find', { drinks: [] });
     }
+});
+
+
+app.get('/random', isAuthenticated, async (req, res) => {
+    let drinks = await fetchCocktails();
+    let randomNumber = Math.floor(Math.random() * drinks.length);
+    let random = drinks[randomNumber];
+    let response = await fetch(`https://www.thecocktaildb.com/api/json/v1/1/search.php?s=${random}`);
+    let data = await response.json();
+    randomNumber = Math.floor(Math.random() * data.drinks.length);
+    let drink = data.drinks[randomNumber];
+    res.render('random', {drink})
 });
 
 app.get('/cocktail/:name', async (req, res) => {

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Cocktail</title>
+    <link href="/css/style2.css" rel="stylesheet">
+</head>
+
+<body>
+    <%-include("partials/nav.ejs")%>
+    <input type="hidden" id="drink" value="<%-drink.strDrink %>">
+    <div class="welcome-box">
+        <h1><%-drink.strDrink %></h1>
+        <form action="/random">
+            <button class="button">Refresh Drink</button>
+        </form>
+        
+    </div>
+
+    <img src="<%-drink.strDrinkThumb %>">
+    <br><br>
+    <div id="cocktailDetails">
+        <strong>Instructions: </strong> <%-drink.strInstructions %>
+        <br>
+        <strong>Type: </strong> <%-drink.strAlcoholic %>
+        <br>
+        <strong>Container: </strong> <%-drink.strGlass %>
+        <br>
+        <div>
+            <strong>Ingredients: </strong>
+            <% if (drink.strIngredient1 != null) { %>
+                <%= drink.strMeasure1 %> <%= drink.strIngredient1 %>,
+            <% } %>
+            <% if (drink.strIngredient2 != null) { %>
+                <%= drink.strMeasure2 %> <%= drink.strIngredient2 %>,
+            <% } %>
+            <% if (drink.strIngredient3 != null) { %>
+                <%= drink.strMeasure3 %> <%= drink.strIngredient3 %>,
+            <% } %>
+            <% if (drink.strIngredient4 != null) { %>
+                <%= drink.strMeasure4 %> <%= drink.strIngredient4 %>,
+            <% } %>
+            <% if (drink.strIngredient5 != null) { %>
+                <%= drink.strMeasure5 %> <%= drink.strIngredient5 %>,
+            <% } %>
+            <% if (drink.strIngredient6 != null) { %>
+                <%= drink.strMeasure6 %> <%= drink.strIngredient6 %>,
+            <% } %>
+            <% if (drink.strIngredient7 != null) { %>
+                <%= drink.strMeasure7 %> <%= drink.strIngredient7 %>,
+            <% } %>
+            <% if (drink.strIngredient8 != null) { %>
+                <%= drink.strMeasure8 %> <%= drink.strIngredient8 %>,
+            <% } %>
+            <% if (drink.strIngredient9 != null) { %>
+                <%= drink.strMeasure9 %> <%= drink.strIngredient9 %>,
+            <% } %>
+            <% if (drink.strIngredient10 != null) { %>
+                <%= drink.strMeasure10 %> <%= drink.strIngredient10 %>,
+            <% } %>
+            <% if (drink.strIngredient11 != null) { %>
+                <%= drink.strMeasure11 %> <%= drink.strIngredient11 %>,
+            <% } %>
+            <% if (drink.strIngredient12 != null) { %>
+                <%= drink.strMeasure12 %> <%= drink.strIngredient12 %>,
+            <% } %>
+            <% if (drink.strIngredient13 != null) { %>
+                <%= drink.strMeasure13 %> <%= drink.strIngredient13 %>,
+            <% } %>
+            <% if (drink.strIngredient14 != null) { %>
+                <%= drink.strMeasure14 %> <%= drink.strIngredient14 %>,
+            <% } %>
+            <% if (drink.strIngredient15 != null) { %>
+                <%= drink.strMeasure15 %> <%= drink.strIngredient15 %>,
+            <% } %>
+        </div>
+        
+    </div>
+
+    <!-- <script src="/js/random.js"></script> -->
+</body>
+
+</html>
