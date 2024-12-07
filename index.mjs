@@ -28,44 +28,25 @@ const pool = mysql.createPool({
 const conn = await pool.getConnection();
 
 async function fetchCocktails() {
-    try {
-        // First try to get all cocktails at once
-        const response = await fetch('https://www.thecocktaildb.com/api/json/v1/1/list.php?c=list');
-        const data = await response.json();
+    let response = await fetch('https://www.thecocktaildb.com/api/json/v1/1/list.php?c=list');
+    let data = await response.json();
         
-        if (data.drinks) {
-            // For each category, fetch its drinks
-            const categoryPromises = data.drinks.map(async (category) => {
-                const catResponse = await fetch(`https://www.thecocktaildb.com/api/json/v1/1/filter.php?c=${encodeURIComponent(category.strCategory)}`);
-                const catData = await catResponse.json();
-                return catData.drinks || [];
-            });
+    let categoryPromises = data.drinks.map(async (category) => {
+        let catResponse = await fetch(`https://www.thecocktaildb.com/api/json/v1/1/filter.php?c=${category.strCategory}`);
+        let catData = await catResponse.json();
+        return catData.drinks || [];
+    });
             
-            const allCategoryDrinks = await Promise.all(categoryPromises);
-            const allDrinks = new Set(
-                allCategoryDrinks
-                    .flat()
-                    .map(drink => drink.strDrink)
-            );
+    let allCategoryDrinks = await Promise.all(categoryPromises);
+    let allDrinks = new Set(allCategoryDrinks.flat().map(drink => drink.strDrink));
             
-            return Array.from(allDrinks).sort();
-        }
-        return [];
-    } catch (error) {
-        console.error('Error fetching cocktails:', error);
-        return [];
-    }
+    return Array.from(allDrinks).sort();
 }
 
 async function fetchCocktailDetails(name) {
-    try {
-        const response = await fetch(`https://www.thecocktaildb.com/api/json/v1/1/search.php?s=${encodeURIComponent(name)}`);
-        const data = await response.json();
-        return data.drinks ? data.drinks[0] : null;
-    } catch (error) {
-        console.error('Error fetching cocktail details:', error);
-        return null;
-    }
+    let response = await fetch(`https://www.thecocktaildb.com/api/json/v1/1/search.php?s=${name}`);
+    let data = await response.json();
+    return data.drinks ? data.drinks[0] : null;
 }
 
 // Routes
@@ -79,14 +60,8 @@ app.get('/welcome', isAuthenticated, (req, res) => {
 });
 
 app.get('/find', isAuthenticated, async (req, res) => {
-    try {
-        const drinks = await fetchCocktails();
-        // console.log(drinks);
-        res.render('find', { drinks });
-    } catch (error) {
-        console.error('Error:', error);
-        res.render('find', { drinks: [] });
-    }
+    let drinks = await fetchCocktails();
+    res.render('find', { drinks });
 });
 
 
@@ -96,20 +71,14 @@ app.get('/random', isAuthenticated, async (req, res) => {
     let random = drinks[randomNumber];
     let response = await fetch(`https://www.thecocktaildb.com/api/json/v1/1/search.php?s=${random}`);
     let data = await response.json();
-    randomNumber = Math.floor(Math.random() * data.drinks.length);
-    let drink = data.drinks[randomNumber];
+    let drink = data.drinks[0];
     res.render('random', {drink})
 });
 
 app.get('/cocktail/:name', async (req, res) => {
-    try {
-        console.log(req.params.name);
-        const cocktail = await fetchCocktailDetails(req.params.name);
-        res.json(cocktail);
-    } catch (error) {
-        console.error('Error:', error);
-        res.status(500).json({ error: 'Failed to fetch cocktail details' });
-    }
+    // console.log(req.params.name);
+    const cocktail = await fetchCocktailDetails(req.params.name);
+    res.json(cocktail);
 });
 
 app.post('/like', async (req, res) => {
@@ -162,10 +131,8 @@ app.get('/posts', isAuthenticated, async (req, res) => {
 app.post('/posts', async (req, res) => {
     let drink = req.body.drinkList;
     let caption = req.body.caption;
-    // console.log(caption);
-    const content = `Drink: ${drink}`; 
-    const cocktail = await fetchCocktailDetails(drink);
-    // console.log(cocktail);
+    let content = `Drink: ${drink}`; 
+    let cocktail = await fetchCocktailDetails(drink);
     let sql = 'INSERT INTO Posts (userId, content, caption, likes, image, instructions) VALUES (?, ?, ?, ?, ?, ?)';
     let sqlParams = [req.session.user.id, content, caption, 0, cocktail.strDrinkThumb, cocktail.strInstructions];
 

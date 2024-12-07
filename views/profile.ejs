@@ -85,7 +85,14 @@
           post.postId); %> <% if (postComments.length > 0) { %> <% for (let
           postComment of postComments) { %>
           <div class="comment">
-            <strong><%= postComment.username %>:</strong>
+            <div style="display: flex; align-items: center">
+              <img
+                class="rounded-circle border border-dark"
+                src="<%= postComment.profilePicture %>"
+                style="width: 5%; background-color: lightgray"
+              />
+              <h1 style="padding-left: 10px"><%= postComment.username %></h1>
+          </div>
             <p><%= postComment.text %></p>
           </div>
           <% } %> <% } else { %>

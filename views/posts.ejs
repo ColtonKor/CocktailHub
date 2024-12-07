@@ -103,7 +103,14 @@
                             <% if (postComments.length > 0) { %>
                                 <% for (let j = 0; j < postComments.length; j++) { %>
                                     <div class="comment">
-                                        <strong><%= postComments[j].username %>:</strong>
+                                        <div style="display: flex; align-items: center">
+                                            <img
+                                              class="rounded-circle border border-dark"
+                                              src="<%= postComments[j].profilePicture %>"
+                                              style="width: 5%; background-color: lightgray"
+                                            />
+                                            <h1 style="padding-left: 10px"><%= postComments[j].username %></h1>
+                                        </div>
                                         <p><%= postComments[j].text %></p>
                                         <form action="/likeComment" method="POST">
                                             <input type="hidden" name="commentId" value="<%= postComments[j].commentId %>">
@@ -150,9 +157,9 @@
                         <input type="text" id="search" name="drinkList" placeholder="Enter a cocktail" list="cocktail-list" required>
                         <datalist id="cocktail-list">
                             <% if (drinks && drinks.length > 0) { %>
-                                <% drinks.forEach(drink => { %>
-                                    <option value="<%= drink %>"><%= drink %></option>
-                                <% }) %>
+                                <% for (let i = 0; i < drinks.length; i++) { %>
+                                    <option value="<%= drinks[i] %>"><%= drinks[i] %></option>
+                                <% } %>
                             <% } %>
                         </datalist>
                     

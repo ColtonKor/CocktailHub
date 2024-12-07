@@ -19,9 +19,9 @@
                 <input type="text" id="search" name="search" placeholder="Enter a cocktail" list="cocktail-list">
                 <datalist id="cocktail-list">
                     <% if (drinks && drinks.length > 0) { %>
-                        <% drinks.forEach(drink => { %>
-                            <option value="<%= drink %>"><%= drink %></option>
-                        <% }) %>
+                        <% for (let i = 0; i < drinks.length; i++) { %>
+                            <option value="<%= drinks[i] %>"><%= drinks[i] %></option>
+                        <% } %>
                     <% } %>
                 </datalist>
                 <button type="submit">Search</button>
