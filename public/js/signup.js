@@ -1,5 +1,5 @@
 document.querySelector("#signupForm").addEventListener("submit", checkInput);
-document.querySelector("#password").addEventListener("click", suggestPassword);
+document.querySelector("#password").addEventListener("focus", suggestPassword);
 document.querySelector("#copySuggested").addEventListener("click", fillPasswords);
 
 function checkInput(event) {
@@ -26,8 +26,6 @@ async function suggestPassword() {
     document.querySelector("#suggest").value = `${data.password}`;
 
     document.querySelector("#copySuggested").style.display = "inline";
-
-
 }
 
 function fillPasswords(event) {

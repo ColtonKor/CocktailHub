@@ -70,6 +70,7 @@ body {
   color: black;
   border: 5px solid #121412;
   border-radius: 40px;
+  padding-bottom: 20px;
 }
 
 .protest-revolution-regular {
@@ -112,11 +113,24 @@ body {
   padding: 20px;
   margin-bottom: 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  width: 50%;
+}
+
+.post-header {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 10px;
 }
 
 .post-content {
   margin-bottom: 15px;
+}
+
+.post-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+  color: #666;
 }
 
 .button {
@@ -145,7 +159,7 @@ body {
 }
 
 .modal-content {
-  background-color: white;
+  background-color: black;
   margin: 15% auto;
   padding: 20px;
   border-radius: 8px;
@@ -175,6 +189,8 @@ body {
   color: #666;
   font-size: 0.9rem;
 }
+
+/* break */
 
 .tag {
   background-color: #e1e1e1;
@@ -220,47 +236,23 @@ body {
   border-radius: 4px;
 }
 
-#postBackground {
-  background-color: #ffffff;
-  border-radius: 10px;
-  padding: 20px;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+#cocktailDetails {
+  background-color: white;
+  color: black;
+  border-radius: 20px;
+  padding: 15px;
+  margin: 20px auto;
+  max-width: 800px;
+  box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
   text-align: left;
-  color: #333;
+  line-height: 1.6;
 }
 
-.post-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 1.2rem;
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-
-.post-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.9rem;
-  color: #666666;
-  margin-top: 10px;
-}
-
-.comments-section {
-  margin-top: 20px;
-  padding-top: 15px;
-  border-top: 1px solid #dddddd;
-}
-
-.comment {
-  margin-bottom: 10px;
-  padding: 10px;
-  background-color: #f8f9fa;
-  border-radius: 5px;
-}
-
-#pfp {
-  border-style: 3px solid black;
+#drinkImg {
+  border-radius: 10px;
+  max-width: 90%;
+  height: auto;
+  margin: 20px auto;
+  display: block;
+  box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
 }
