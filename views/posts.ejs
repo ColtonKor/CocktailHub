@@ -26,7 +26,7 @@
 <body>
     <%-include("partials/nav.ejs")%>
 
-    <div class="container">
+    <div class="container" style="width: 50%;">
         <button class="button" id="newPost">
             New Post
         </button>
@@ -44,11 +44,28 @@
             <% if (posts && posts.length > 0) { %>
                 <% for (let i = 0; i < posts.length; i++) { %>
                     <div class="post" id="postBackground">
-                        <strong>User:</strong> <%= posts[i].username %>
-                        <div class="content">
+                        <div
+                        style="
+                          display: flex;
+                          justify-content: space-between;
+                          align-items: center;
+                          width: 20%;
+                        "
+                      >
+                        <div style="display: flex; align-items: center">
+                          <img
+                            class="rounded-circle border border-dark"
+                            src="<%= posts[i].profilePicture %>"
+                            style="width: 40%; background-color: lightgray"
+                          />
+                          <h1 style="padding-left: 10px"><%= posts[i].username %></h1>
+                        </div>
+                      </div>           
+                      <hr>             
+                      <div class="content">
                             <p>  <%= posts[i].content %></p>
                         </div>
-                        <div class="image">
+                        <div class="image text-center">
                             <img src="<%-posts[i].image%>">
                         </div>
                         <br><br><br>
