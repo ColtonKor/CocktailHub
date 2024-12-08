@@ -91,8 +91,10 @@
                 src="<%= postComment.profilePicture %>"
                 style="width: 5%; background-color: lightgray"
               />
-              <h1 style="padding-left: 10px"><%= postComment.username %></h1>
-          </div>
+              <h1 style="padding-left: 10px; font-size: 20px">
+                <%= postComment.username %>
+              </h1>
+            </div>
             <p><%= postComment.text %></p>
           </div>
           <% } %> <% } else { %>
