@@ -117,6 +117,7 @@
                                             <button type="submit" style="background:none; border:none; cursor:pointer;">
                                                 ❤️ <%= postComments[j].likes %>
                                             </button>
+                                            <span>                   <%= new Date(postComments[j].datePosted).toLocaleDateString() %></span>
                                         </form>
                                         
                                         <% if (postComments[j].userId == user) { %>

@@ -107,8 +107,10 @@ app.post('/likeComment', async (req, res) => {
 app.post('/comment', async (req, res) => {
     const { postId } = req.body;
     const { commentContent } = req.body;
-    let sql = 'INSERT INTO Comments (text, likes, userId, postId) VALUES (?,?,?,?)';
-    let sqlParams = [commentContent, 0, req.session.user.id, postId]
+    let currentDate = new Date();
+    let formattedDate = currentDate.toISOString().split('T')[0];
+    let sql = 'INSERT INTO Comments (text, likes, userId, postId, datePosted) VALUES (?,?,?,?,?)';
+    let sqlParams = [commentContent, 0, req.session.user.id, postId, formattedDate];
     const [rows] = await conn.query(sql, sqlParams);
     res.redirect('/posts');
 });
@@ -133,8 +135,10 @@ app.post('/posts', async (req, res) => {
     let caption = req.body.caption;
     let content = `Drink: ${drink}`; 
     let cocktail = await fetchCocktailDetails(drink);
-    let sql = 'INSERT INTO Posts (userId, content, caption, likes, image, instructions) VALUES (?, ?, ?, ?, ?, ?)';
-    let sqlParams = [req.session.user.id, content, caption, 0, cocktail.strDrinkThumb, cocktail.strInstructions];
+    let currentDate = new Date();
+    let formattedDate = currentDate.toISOString().split('T')[0];
+    let sql = 'INSERT INTO Posts (userId, content, caption, likes, image, instructions, datePosted) VALUES (?, ?, ?, ?, ?, ?, ?)';
+    let sqlParams = [req.session.user.id, content, caption, 0, cocktail.strDrinkThumb, cocktail.strInstructions, formattedDate];
 
     let sqlUpdate = 'UPDATE users SET postCount = postCount + 1 WHERE userId = ?';
     let sqlParamsUpdate = [req.session.user.id];

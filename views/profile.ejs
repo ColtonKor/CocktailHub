@@ -96,6 +96,15 @@
               </h1>
             </div>
             <p><%= postComment.text %></p>
+            <div>
+              <form action="/likeComment" method="POST">
+                <input type="hidden" name="commentId" value="<%= postComment.commentId %>">
+                <button type="submit" style="background:none; border:none; cursor:pointer;">                
+                  ❤️ <%= postComment.likes %>
+                </button>
+                <span>                   <%= new Date(postComment.datePosted).toLocaleDateString() %></span>
+              </form>
+            </div>
           </div>
           <% } %> <% } else { %>
           <p class="comment">No comments yet!</p>
