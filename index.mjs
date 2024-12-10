@@ -12,86 +12,45 @@ app.set('view engine', 'ejs');
 
 app.set('trust proxy', 1);
 app.use(session({
-    secret: 'keyboard cat',
-    resave: false,
-    saveUninitialized: true,
-    cookie: {
-        secure: false,
-        httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000 // 24 hour expiration
-    }
-}));
+  secret: 'keyboard cat',
+  resave: false,
+  saveUninitialized: true,
+}))
 
-// pool configuration update
 const pool = mysql.createPool({
     host: "aureliano-khoury.tech",
     user: "aurelia1_webuser",
     password: "100webuser",
     database: "aurelia1_quotes",
     connectionLimit: 10,
-    waitForConnections: true,
-    enableKeepAlive: true,
-    keepAliveInitialDelay: 10000,
-    connectTimeout: 20000,
-    acquireTimeout: 10000,
-    idleTimeout: 60000
+    waitForConnections: true
 });
+const conn = await pool.getConnection();
 
-// Helper function for all database queries
-async function executeQuery(sql, params = []) {
-    let connection;
-    try {
-        connection = await pool.getConnection();
-        const [results] = await connection.query(sql, params);
-        return results;
-    } catch (error) {
-        console.error('Database error:', error);
-        throw error;
-    } finally {
-        if (connection) {
-            try {
-                connection.release();
-            } catch (error) {
-                console.error('Error releasing connection:', error);
-            }
-        }
-    }
-}
-
-// API helper functions
 async function fetchCocktails() {
-    try {
-        let response = await fetch('https://www.thecocktaildb.com/api/json/v1/1/list.php?c=list');
-        let data = await response.json();
+    let response = await fetch('https://www.thecocktaildb.com/api/json/v1/1/list.php?c=list');
+    let data = await response.json();
         
-        let categoryPromises = data.drinks.map(async (category) => {
-            let catResponse = await fetch(`https://www.thecocktaildb.com/api/json/v1/1/filter.php?c=${category.strCategory}`);
-            let catData = await catResponse.json();
-            return catData.drinks || [];
-        });
-                
-        let allCategoryDrinks = await Promise.all(categoryPromises);
-        let allDrinks = new Set(allCategoryDrinks.flat().map(drink => drink.strDrink));
-                
-        return Array.from(allDrinks).sort();
-    } catch (error) {
-        console.error('Error fetching cocktails:', error);
-        throw error;
-    }
+    let categoryPromises = data.drinks.map(async (category) => {
+        let catResponse = await fetch(`https://www.thecocktaildb.com/api/json/v1/1/filter.php?c=${category.strCategory}`);
+        let catData = await catResponse.json();
+        return catData.drinks || [];
+    });
+            
+    let allCategoryDrinks = await Promise.all(categoryPromises);
+    let allDrinks = new Set(allCategoryDrinks.flat().map(drink => drink.strDrink));
+            
+    return Array.from(allDrinks).sort();
 }
 
 async function fetchCocktailDetails(name) {
-    try {
-        let response = await fetch(`https://www.thecocktaildb.com/api/json/v1/1/search.php?s=${name}`);
-        let data = await response.json();
-        return data.drinks ? data.drinks[0] : null;
-    } catch (error) {
-        console.error('Error fetching cocktail details:', error);
-        throw error;
-    }
+    let response = await fetch(`https://www.thecocktaildb.com/api/json/v1/1/search.php?s=${name}`);
+    let data = await response.json();
+    return data.drinks ? data.drinks[0] : null;
 }
 
 // Routes
+
 app.get('/', (req, res) => {
     res.render('login');
 });
@@ -101,272 +60,237 @@ app.get('/welcome', isAuthenticated, (req, res) => {
 });
 
 app.get('/find', isAuthenticated, async (req, res) => {
-    try {
-        let drinks = await fetchCocktails();
-        res.render('find', { drinks });
-    } catch (error) {
-        console.error('Error in /find:', error);
-        res.status(500).send('An error occurred while fetching drinks');
-    }
+    let drinks = await fetchCocktails();
+    res.render('find', { drinks });
 });
 
+
 app.get('/random', isAuthenticated, async (req, res) => {
-    try {
-        let drinks = await fetchCocktails();
-        let randomNumber = Math.floor(Math.random() * drinks.length);
-        let random = drinks[randomNumber];
-        let response = await fetch(`https://www.thecocktaildb.com/api/json/v1/1/search.php?s=${random}`);
-        let data = await response.json();
-        let drink = data.drinks[0];
-        res.render('random', {drink});
-    } catch (error) {
-        console.error('Error in /random:', error);
-        res.status(500).send('An error occurred while fetching random drink');
-    }
+    let drinks = await fetchCocktails();
+    let randomNumber = Math.floor(Math.random() * drinks.length);
+    let random = drinks[randomNumber];
+    let response = await fetch(`https://www.thecocktaildb.com/api/json/v1/1/search.php?s=${random}`);
+    let data = await response.json();
+    let drink = data.drinks[0];
+    res.render('random', {drink})
 });
 
 app.get('/cocktail/:name', async (req, res) => {
-    try {
-        const cocktail = await fetchCocktailDetails(req.params.name);
-        res.json(cocktail);
-    } catch (error) {
-        console.error('Error in /cocktail/:name:', error);
-        res.status(500).send('An error occurred while fetching cocktail details');
-    }
+    // console.log(req.params.name);
+    const cocktail = await fetchCocktailDetails(req.params.name);
+    res.json(cocktail);
 });
 
 app.post('/like', async (req, res) => {
-    try {
-        const { postId } = req.body;
-        let likes = await executeQuery('SELECT likes FROM Posts WHERE postId = ?', [postId]);
-        await executeQuery('UPDATE Posts SET likes = ? WHERE postId = ?', [likes[0].likes + 1, postId]);
-        res.redirect('/posts');
-    } catch (error) {
-        console.error('Error in /like:', error);
-        res.status(500).send('An error occurred while updating likes');
-    }
+    const { postId } = req.body;
+    let getLikesSql = 'SELECT likes FROM Posts WHERE postId = ?';
+    let sqlParamsLike = [postId];
+    const [likesTable] = await conn.query(getLikesSql, sqlParamsLike);
+    let sql = 'UPDATE Posts SET likes = ? WHERE postId = ?';
+    let sqlParams = [likesTable[0].likes + 1, postId]
+    const [rows] = await conn.query(sql, sqlParams);
+    res.redirect('/posts');
 });
 
 app.post('/likeComment', async (req, res) => {
-    try {
-        const { commentId } = req.body;
-        let likes = await executeQuery('SELECT likes FROM Comments WHERE commentId = ?', [commentId]);
-        await executeQuery('UPDATE Comments SET likes = ? WHERE commentId = ?', [likes[0].likes + 1, commentId]);
-        res.redirect('/posts');
-    } catch (error) {
-        console.error('Error in /likeComment:', error);
-        res.status(500).send('An error occurred while updating comment likes');
-    }
+    const { commentId } = req.body;
+    let getLikesSql = 'SELECT likes FROM Comments WHERE commentId = ?';
+    let sqlParamsLike = [commentId];
+    const [likesTable] = await conn.query(getLikesSql, sqlParamsLike);
+    let sql = 'UPDATE Comments SET likes = ? WHERE commentId = ?';
+    let sqlParams = [likesTable[0].likes + 1, commentId]
+    const [rows] = await conn.query(sql, sqlParams);
+    res.redirect('/posts');
 });
 
+
 app.post('/comment', async (req, res) => {
-    try {
-        const { postId, commentContent } = req.body;
-        let currentDate = new Date().toISOString().split('T')[0];
-        await executeQuery(
-            'INSERT INTO Comments (text, likes, userId, postId, datePosted) VALUES (?,?,?,?,?)',
-            [commentContent, 0, req.session.user.id, postId, currentDate]
-        );
-        res.redirect('/posts');
-    } catch (error) {
-        console.error('Error in /comment:', error);
-        res.status(500).send('An error occurred while adding comment');
-    }
+    const { postId } = req.body;
+    const { commentContent } = req.body;
+    let currentDate = new Date();
+    let formattedDate = currentDate.toISOString().split('T')[0];
+    let sql = 'INSERT INTO Comments (text, likes, userId, postId, datePosted) VALUES (?,?,?,?,?)';
+    let sqlParams = [commentContent, 0, req.session.user.id, postId, formattedDate];
+    const [rows] = await conn.query(sql, sqlParams);
+    res.redirect('/posts');
 });
 
 app.get('/posts', isAuthenticated, async (req, res) => {
-    try {
-        let keyword = req.query.keyword || '';
-        const posts = await executeQuery(
-            'SELECT * FROM Posts NATURAL JOIN users WHERE username LIKE ? ORDER BY postId DESC',
-            [`%${keyword}%`]
-        );
-        const drinks = await fetchCocktails();
-        const comments = await executeQuery('SELECT * FROM Comments NATURAL JOIN users');
-        res.render('posts', { posts, drinks, user: req.session.user.id, comments});
-    } catch (error) {
-        console.error('Error in /posts:', error);
-        res.status(500).send('An error occurred while fetching posts');
-    }
+    let keyword = req.query.keyword || '';
+    let sql = 'SELECT * FROM Posts NATURAL JOIN users WHERE username LIKE ? ORDER BY postId DESC';
+    let postSearch = [`%${keyword}%`];
+    const drinks = await fetchCocktails();
+    const [posts] = await conn.query(sql, postSearch);
+    let UserSql = `SELECT * FROM users WHERE userId = ?`;
+    let sqlParams = [req.session.user.id];
+    const [user] = await conn.query(UserSql, sqlParams);
+    let sqlComments = 'SELECT * FROM Comments NATURAL JOIN users';
+    const [comments] = await conn.query(sqlComments);
+    console.log(posts);
+    res.render('posts', { posts, drinks, user: req.session.user.id, comments});
 });
 
 app.post('/posts', async (req, res) => {
-    try {
-        let { drinkList: drink, caption } = req.body;
-        let content = `Drink: ${drink}`;
-        let cocktail = await fetchCocktailDetails(drink);
-        let currentDate = new Date().toISOString().split('T')[0];
-        
-        await executeQuery(
-            'INSERT INTO Posts (userId, content, caption, likes, image, instructions, datePosted) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [req.session.user.id, content, caption, 0, cocktail.strDrinkThumb, cocktail.strInstructions, currentDate]
-        );
-        
-        await executeQuery(
-            'UPDATE users SET postCount = postCount + 1 WHERE userId = ?',
-            [req.session.user.id]
-        );
-        
-        res.redirect('/posts');
-    } catch (error) {
-        console.error('Error in POST /posts:', error);
-        res.status(500).send('An error occurred while creating post');
-    }
+    let drink = req.body.drinkList;
+    let caption = req.body.caption;
+    let content = `Drink: ${drink}`; 
+    let cocktail = await fetchCocktailDetails(drink);
+    let currentDate = new Date();
+    let formattedDate = currentDate.toISOString().split('T')[0];
+    let sql = 'INSERT INTO Posts (userId, content, caption, likes, image, instructions, datePosted) VALUES (?, ?, ?, ?, ?, ?, ?)';
+    let sqlParams = [req.session.user.id, content, caption, 0, cocktail.strDrinkThumb, cocktail.strInstructions, formattedDate];
+
+    let sqlUpdate = 'UPDATE users SET postCount = postCount + 1 WHERE userId = ?';
+    let sqlParamsUpdate = [req.session.user.id];
+    const [update] = await conn.query(sqlUpdate, sqlParamsUpdate);
+    const [posts] = await conn.query(sql, sqlParams);
+    res.redirect('/posts');
 });
+
 
 app.get('/logout', (req, res) => {
     req.session.destroy();
-    res.render('login.ejs');
-});
+    res.render('login.ejs')
+ });
 
 app.get('/profile', isAuthenticated, async (req, res) => {
-    try {
-        const posts = await executeQuery(
-            'SELECT * FROM Posts NATURAL JOIN users WHERE userId = ? ORDER BY postId DESC',
-            [req.session.user.id]
-        );
-        const comments = await executeQuery('SELECT * FROM Comments NATURAL JOIN users');
-        res.render('profile.ejs', {user: req.session.user, posts, comments});
-    } catch (error) {
-        console.error('Error in /profile:', error);
-        res.status(500).send('An error occurred while fetching profile');
-    }
-});
+    let sql = `SELECT * FROM Posts NATURAL JOIN users WHERE userId = ? ORDER BY postId DESC`
+    let sqlParams = req.session.user.id;
+    const [posts] = await conn.query(sql, sqlParams);
+
+    let sqlComments = 'SELECT * FROM Comments NATURAL JOIN users';
+    const [comments] = await conn.query(sqlComments);
+    
+    res.render('profile.ejs', {user: req.session.user, posts, comments});
+ });
 
 app.get('/profile/edit', isAuthenticated, (req, res) => {
     res.render('editProfile.ejs', {user: req.session.user});
 });
 
 app.post('/profile/edit', isAuthenticated, async (req, res) => {
-    try {
-        let { firstName, lastName, username } = req.body;
-        let userId = req.session.user.id;
-        
-        req.session.user.firstName = firstName;
-        req.session.user.lastName = lastName;
-        req.session.user.username = username;
-        
-        await executeQuery(
-            'UPDATE users SET firstName = ?, lastName = ?, username = ? WHERE userId = ?',
-            [firstName, lastName, username, userId]
-        );
-        
-        res.redirect('/profile');
-    } catch (error) {
-        console.error('Error in profile/edit:', error);
-        res.status(500).send('An error occurred while updating profile');
-    }
+    let firstName = req.body.firstName;
+    let lastName = req.body.lastName;
+    let username = req.body.username;
+    let userId = req.session.user.id;
+    req.session.user.firstName = firstName;
+    req.session.user.lastName = lastName;
+    req.session.user.username = username;
+    let sql = `UPDATE users
+               SET firstName =?,
+               lastName = ?,
+               username = ?
+               WHERE userId = ?`;
+    let sqlParams = [firstName, lastName, username, userId];
+    const [userData] = await conn.query(sql, sqlParams);
+    res.redirect('/profile');
 });
 
 app.get('/profile/deletePost', isAuthenticated, async (req, res) => {
-    try {
-        await executeQuery('DELETE FROM Posts WHERE postId = ?', [req.query.postId]);
-        res.redirect('/profile');
-    } catch (error) {
-        console.error('Error in profile/deletePost:', error);
-        res.status(500).send('An error occurred while deleting post');
-    }
+    let postId = req.query.postId;
+    let sql = `DELETE FROM Posts WHERE postId = ?`;
+    const [rows] = await conn.query(sql, [postId]);
+
+    res.redirect('/profile');
 });
 
 app.get('/comment/delete', isAuthenticated, async (req, res) => {
-    try {
-        await executeQuery('DELETE FROM Comments WHERE commentId = ?', [req.query.commentId]);
-        res.redirect('/posts');
-    } catch (error) {
-        console.error('Error in comment/delete:', error);
-        res.status(500).send('An error occurred while deleting comment');
-    }
+    let commentId = req.query.commentId;
+    console.log(commentId);
+    let sql = `DELETE FROM Comments WHERE commentId = ?`;
+    const [rows] = await conn.query(sql, [commentId]);
+
+    res.redirect('/posts');
 });
 
 app.get('/createAccount', (req, res) => {
-    res.render('signup.ejs');
+    res.render('signup.ejs')
 });
 
 app.post('/signup', async (req, res) => {
-    try {
-        let { firstName: fName, lastName: lName, username, password } = req.body;
+    let fName = req.body.firstName;
+    let lName = req.body.lastName;
+    let username = req.body.username;
+    let password = req.body.password;
 
-        const existingUser = await executeQuery('SELECT * FROM users WHERE username = ?', [username]);
-        if (existingUser.length > 0) {
-            return res.status(400).send('Username already taken.');
-        }
-        
-        let saltRounds = 10;
-        let hashedPassword = await bcrypt.hash(password, saltRounds);
-        let pfpURL = `https://robohash.org/${username}.png?set=set4`;
-
-        await executeQuery(
-            'INSERT INTO users (firstName, lastName, username, password, profilePicture) VALUES(?, ?, ?, ?, ?)',
-            [fName, lName, username, hashedPassword, pfpURL]
-        );
-        
-        res.render('login.ejs');
-    } catch (error) {
-        console.error('Error in /signup:', error);
-        res.status(500).send('An error occurred during signup');
+    let userSql = `SELECT * 
+                   FROM users 
+                   WHERE username = ?`;
+    let userParams = [username];
+    const [unique] = await conn.query(userSql, userParams);
+    if (unique.length > 0) {
+        return res.status(400).send('Username already taken.');
     }
+    
+    let saltRounds = 10;
+    let hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    let pfpURL = `https://robohash.org/${username}.png?set=set4`;
+
+    let sql = `INSERT INTO users 
+               (firstName, 
+                lastName, 
+                username, 
+                password,
+                profilePicture) 
+                VALUES(?, ?, ?, ?, ?)`;
+    let sqlParams = [fName, lName, username, hashedPassword, pfpURL];
+            
+    await conn.query(sql, sqlParams);
+res.render('login.ejs')
 });
 
 app.post('/login', async (req, res) => {
-    try {
-        let { username, password } = req.body;
-        const users = await executeQuery('SELECT * FROM users WHERE username = ?', [username]);
+    let username = req.body.username;
+    let password = req.body.password;
 
-        if (users.length === 0) {
-            return res.redirect('/');
-        }
+    let sql = `SELECT * 
+    FROM users
+    WHERE username = ?`;
+    let sqlParams = [username];
+    const [rows] = await conn.query(sql, sqlParams);
 
-        const match = await bcrypt.compare(password, users[0].password);
-        if (match) {
-            req.session.authenticated = true;
-            req.session.user = {
-                id: users[0].userId,
-                username: users[0].username,
-                firstName: users[0].firstName,
-                lastName: users[0].lastName,
-                pfp: users[0].profilePicture
-            };
-            res.render('welcome.ejs');
-        } else {
-            res.redirect("/");
-        }
-    } catch (error) {
-        console.error('Error in /login:', error);
-        res.status(500).send('An error occurred during login');
+    let passwordHash;
+    if(rows.length > 0) { 
+        passwordHash = rows[0].password;
+    } else {
+        res.redirect('/');
+        return;
     }
+
+    const match = await bcrypt.compare(password, passwordHash);
+    if(match) {
+        req.session.authenticated = true;
+        req.session.user = {
+            id: rows[0].userId,
+            username: rows[0].username,
+            firstName: rows[0].firstName,
+            lastName: rows[0].lastName,
+            pfp: rows[0].profilePicture
+        };
+        res.render('welcome.ejs');
+    } else {
+        res.redirect("/");
+    }
+ });
+
+app.get('/costs', (req, res) => {
+    res.render('costs');
 });
 
 app.get('/auth', (req, res) => {
     res.render('auth');
 });
 
-// Middleware functions
-function isAuthenticated(req, res, next) {
-    if (req.session.authenticated) {
+ // middleware fumctions
+ function isAuthenticated(req, res, next) {
+    if(req.session.authenticated) {
         next();
     } else {
         res.redirect('/');
     }
 }
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-    console.error('Unhandled error:', err);
-    res.status(500).send('An unexpected error occurred');
-});
-
-// Graceful shutdown
-process.on('SIGINT', async () => {
-    try {
-        await pool.end();
-        console.log('Database pool connections closed.');
-        process.exit(0);
-    } catch (error) {
-        console.error('Error closing pool connections:', error);
-        process.exit(1);
-    }
-});
-
-app.listen(10099, () => {
-    console.log("Express server running on port 10099");
-});
+app.listen(3101, ()=>{
+    console.log("Express server running")
+})
