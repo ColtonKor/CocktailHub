@@ -74,7 +74,7 @@
         <div class="post-footer">
           <figure>
             <span>
-              Posted: <%= new Date(post.datePosted).toLocaleDateString()%>
+              Posted: <%= new Date(post.dateposted).toLocaleDateString()%>
             </span>
           </figure>
         </div>
@@ -88,7 +88,7 @@
             <div style="display: flex; align-items: center">
               <img
                 class="rounded-circle border border-dark"
-                src="<%= postComment.profilePicture %>"
+                src="<%= postComment.profilepicture %>"
                 style="width: 5%; background-color: lightgray"
               />
               <h1 style="padding-left: 10px; font-size: 20px">
@@ -98,11 +98,11 @@
             <p><%= postComment.text %></p>
             <div>
               <form action="/likeComment" method="POST">
-                <input type="hidden" name="commentId" value="<%= postComment.commentId %>">
+                <input type="hidden" name="commentId" value="<%= postComment.commentid %>">
                 <button type="submit" style="background:none; border:none; cursor:pointer;">                
                   ❤️ <%= postComment.likes %>
                 </button>
-                <span>                   <%= new Date(postComment.datePosted).toLocaleDateString() %></span>
+                <span>                   <%= new Date(postComment.dateposted).toLocaleDateString() %></span>
               </form>
             </div>
           </div>
@@ -111,7 +111,7 @@
           <% } %>
         </div>
         <div class="text-center">
-          <a href="/profile/deletePost?postId=<%= post.postId %>">
+          <a href="/profile/deletePost?postId=<%= post.postid %>">
             <button class="btn btn-danger btn-sm">
               <i class="fas fa-trash"></i>
             </button>

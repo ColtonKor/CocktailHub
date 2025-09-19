@@ -55,7 +55,7 @@
                         <div style="display: flex; align-items: center">
                           <img
                             class="rounded-circle border border-dark"
-                            src="<%= posts[i].profilePicture %>"
+                            src="<%= posts[i].profilepicture %>"
                             style="width: 40%; background-color: lightgray"
                           />
                           <h1 style="padding-left: 10px"><%= posts[i].username %></h1>
@@ -76,14 +76,14 @@
                         <div class="post-footer">
                             <figure>
                                 <form action="/like" method="POST">
-                                    <input type="hidden" name="postId" value="<%= posts[i].postId %>">
+                                    <input type="hidden" name="postId" value="<%= posts[i].postid %>">
                                     <button type="submit" style="background:none; border:none; cursor:pointer;">
                                         ❤️ <%= posts[i].likes %>
                                     </button>
                                 </form>
                             </figure>
                             <figure>
-                                <span>Posted: <%= new Date(posts[i].datePosted).toLocaleDateString() %></span>
+                                <span>Posted: <%= new Date(posts[i].dateposted).toLocaleDateString() %></span>
                             </figure>
                             <figure>
                                 <button class="toggle">Open Comments</button>
@@ -92,7 +92,7 @@
                         <br>
                         <div class="comments-section">
                             <form action="/comment" method="POST">
-                                <input type="hidden" name="postId" value="<%= posts[i].postId %>">
+                                <input type="hidden" name="postId" value="<%= posts[i].postid %>">
                                 <textarea name="commentContent" placeholder="Add your comment..." required></textarea>
                                 <button type="submit">Post Comment</button>
                             </form>
@@ -106,23 +106,23 @@
                                         <div style="display: flex; align-items: center">
                                             <img
                                               class="rounded-circle border border-dark"
-                                              src="<%= postComments[j].profilePicture %>"
+                                              src="<%= postComments[j].profilepicture %>"
                                               style="width: 5%; background-color: lightgray"
                                             />
                                             <h1 style="padding-left: 10px; font-size: 20px;"><%= postComments[j].username %></h1>
                                         </div>
                                         <p><%= postComments[j].text %></p>
                                         <form action="/likeComment" method="POST">
-                                            <input type="hidden" name="commentId" value="<%= postComments[j].commentId %>">
+                                            <input type="hidden" name="commentId" value="<%= postComments[j].commentid %>">
                                             <button type="submit" style="background:none; border:none; cursor:pointer;">
                                                 ❤️ <%= postComments[j].likes %>
                                             </button>
-                                            <span>                   <%= new Date(postComments[j].datePosted).toLocaleDateString() %></span>
+                                            <span>                   <%= new Date(postComments[j].dateposted).toLocaleDateString() %></span>
                                         </form>
                                         
                                         <% if (postComments[j].userId == user) { %>
                                             <form action="/comment/delete">
-                                                <input type="hidden" name="commentId" value="<%= postComments[j].commentId %>">
+                                                <input type="hidden" name="commentId" value="<%= postComments[j].commentid %>">
                                                 <button class="btn btn-danger btn-sm">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
